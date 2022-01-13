@@ -1,0 +1,22 @@
+{
+  "name": "cs561-api-mocker",
+  "version": "1.0.0",
+  "description": "API mocker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anushkumar27/cs561-api-mocker.git"
+  },
+  "author": "Anush Suresh Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anushkumar27/cs561-api-mocker/issues"
+  },
+  "homepage": "https://github.com/anushkumar27/cs561-api-mocker#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
