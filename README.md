@@ -7,17 +7,20 @@ A course project for CS561 Software Engineering Methods. This is a API Mocker fo
 Currently supports:
 ```/data/2.5/weather```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
 ### Built With
 
 * [Express](https://expressjs.com/)
 * [Nodejs](https://nodejs.org/)
 * [openweathermap.org](https://openweathermap.org/current)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
+### Demo
+[http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000/data/2.5/weather](http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000/data/2.5/weather)
+
+_(Deployed on AWS EC2 Instance, Oregon West-2 Region)_
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
