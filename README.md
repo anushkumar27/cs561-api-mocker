@@ -36,7 +36,7 @@ The project is built using ExpressJS and uses `npm` as package manager.
 ### Installation
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/anushkumar27/cs561-api-mocker.git
    ```
 2. Install NPM packages
    ```sh
