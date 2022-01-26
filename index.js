@@ -1,6 +1,9 @@
 const express = require('express')
+const crypto = require('crypto')
+var bodyParser = require('body-parser');
 const app = express()
 const port = 3000
+const BASE_PATH = "/v1/"
 
 const corvallisWeather = {
     "coord": {
@@ -46,9 +49,41 @@ const corvallisWeather = {
     "name": "Corvallis",
     "cod": 200
 }
-app.get('/data/2.5/weather', (req, res) => {
+
+// for parsing application/json
+app.use(bodyParser.json()); 
+
+// for parsing application/xwww-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true })); 
+
+app.get(BASE_PATH + 'weather', (req, res) => {
     res.setHeader("content-type", "application/json")
     res.send(corvallisWeather)
+})
+
+app.get(BASE_PATH + 'hello', (req, res) => {
+    res.setHeader("content-type", "application/json")
+    res.send({"Hello" : "World!"})
+})
+
+app.post(BASE_PATH + 'auth', (req, res) => {
+    var username = req.body.username;
+    var password = req.body.password;
+    res.setHeader("content-type", "application/json")
+
+    if(username == undefined || password == undefined || username.length == 0 || password.length == 0){
+        res.status(400)
+        res.send({
+            "type": "error",
+            "message": "Invalid Input"
+          })
+    }else{
+        res.send({
+            "token": crypto.randomBytes(32).toString('hex'),
+            "expiry": Math.floor(new Date().getTime() + 30 * 60000)
+          }
+        )
+    }
 })
 
 app.listen(port, () => {
