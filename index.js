@@ -100,7 +100,7 @@ app.post(BASE_PATH + 'auth', (req, res) => {
         })
     } else {
         res.send({
-            "access-token": jwt.sign({ "username": username, "expiry": expiresIn }, TOKEN_SECRET),
+            "access-token": jwt.sign({"username": username}, TOKEN_SECRET, { expiresIn: '1h' }),
             "expires": expiresIn
         }
         )
@@ -112,15 +112,15 @@ app.post(BASE_PATH + 'auth', (req, res) => {
  * @param {String} token 
  * @returns boolean
  * True: If the token is a valid JWT token
- * False: If the token is invalid
+ * False: If the token is invalid or expired
  * 
- * Note: We are not checking for token expiry
  */
 function validateToken(token) {
     try {
         jwt.verify(token, TOKEN_SECRET);
         return true;
     } catch (err) {
+        console.log("JWT verification failed: " + err.message)
         return false;
     }
 }
