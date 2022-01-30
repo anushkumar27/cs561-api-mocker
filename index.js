@@ -1,9 +1,12 @@
 const express = require('express')
 const crypto = require('crypto')
 var bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const app = express()
 const port = 3000
 const BASE_PATH = "/v1/"
+// Risk: Add to secrets/environment
+const TOKEN_SECRET = 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
 
 const corvallisWeather = {
     "coord": {
@@ -69,6 +72,8 @@ app.get(BASE_PATH + 'hello', (req, res) => {
 app.post(BASE_PATH + 'auth', (req, res) => {
     var username = req.body.username;
     var password = req.body.password;
+    // All tokens have 60 mins validity
+    var expiresIn = new Date(new Date().getTime() + 3600000).toJSON()
     res.setHeader("content-type", "application/json")
 
     if(username == undefined || password == undefined || username.length == 0 || password.length == 0){
@@ -79,8 +84,8 @@ app.post(BASE_PATH + 'auth', (req, res) => {
           })
     }else{
         res.send({
-            "token": crypto.randomBytes(32).toString('hex'),
-            "expiry": Math.floor(new Date().getTime() + 30 * 60000)
+            "access-token": jwt.sign({"username" : username, "expiry": expiresIn}, TOKEN_SECRET),
+            "expires": expiresIn
           }
         )
     }
