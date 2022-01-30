@@ -1,0 +1,287 @@
+swagger: "2.0"
+info:
+  description: "CS561 Assignment 4, a swagger file demo."
+  version: "1.0.0"
+  title: "CS561: Swagger Demo"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "sureshka@oregonstate.edu"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/v1"
+tags:
+- name: "Weather Service"
+  description: "Everything about Corvallis's Weather"
+- name: "Greetings"
+  description: "Hello World!"
+- name: "Authentication"
+  description: "User authentication"
+schemes:
+- "http"
+paths:
+  /weather:
+    get:
+      tags:
+      - "Weather Service"
+      summary: "Get Corvallis's weather details"
+      operationId: "getWeatherData"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "q"
+        in: "query"
+        description: "City's name"
+        default: "Corvallis"
+        required: true
+        type: "string"
+      - name: "appid"
+        in: "query"
+        description: "API key subscribed to this service"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/WeatherResponse"
+        "400":
+          description: "Invalid appid"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
+    
+  /hello :
+    get:
+      tags:
+      - "Greetings"
+      summary: "Get greetings"
+      operationId: "getGreetings"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "successful"
+          schema:
+            type: "object"
+            example: {"Hello": "World!"}
+  /auth:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Generate authentication token"
+      operationId: "getUserAuthToken"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "formData"
+        description: "Username"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "formData"
+        description: "Password"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful"
+          schema:
+            $ref: "#/definitions/Token"
+        "410":
+          description: "Username or Password Incorrect"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
+        "405":
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
+  
+definitions:
+  Token:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        example: "29ed0c5290cd527c8311b74ca2803e42d5b9d9a30cf356c7612b59ddcffbe715f46f63ad7b0ba741b51d5b7804485d64fd80be94599e4e1544c644512a124ccf"
+      expiry:
+        type: "integer"
+        format: "int64"
+        example: 1643227957000
+  Coord:
+    title: Coord
+    type: object
+    properties:
+      lon:
+        type: number
+        description: City geo location, longitude
+        example: 145.77000000000001
+      lat:
+        type: number
+        description: City geo location, latitude
+        example: -16.920000000000002
+  Weather:
+    title: Weather
+    type: object
+    properties:
+      id:
+        type: integer
+        description: Weather condition id
+        format: int32
+        example: 803
+      main:
+        type: string
+        description: Group of weather parameters (Rain, Snow, Extreme etc.)
+        example: Clouds
+      description:
+        type: string
+        description: Weather condition within the group
+        example: broken clouds
+      icon:
+        type: string
+        description: Weather icon id
+        example: 04n
+  Main:
+    title: Main
+    type: object
+    properties:
+      temp:
+        type: number
+        description: 'Temperature. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.'
+        example: 293.25
+      pressure:
+        type: integer
+        description: Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa
+        format: int32
+        example: 1019
+      humidity:
+        type: integer
+        description: Humidity, %
+        format: int32
+        example: 83
+      temp_min:
+        type: number
+        description: 'Minimum temperature at the moment. This is deviation from current temp that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.'
+        example: 289.81999999999999
+      temp_max:
+        type: number
+        description: 'Maximum temperature at the moment. This is deviation from current temp that is possible for large cities and megalopolises geographically expanded (use these parameter optionally). Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.'
+        example: 295.37
+      sea_level:
+        type: number
+        description: Atmospheric pressure on the sea level, hPa
+        example: 984
+      grnd_level:
+        type: number
+        description: Atmospheric pressure on the ground level, hPa
+        example: 990
+  Wind:
+    title: Wind
+    type: object
+    properties:
+      speed:
+        type: number
+        description: 'Wind speed. Unit Default: meter/sec, Metric: meter/sec, Imperial: miles/hour.'
+        example: 5.0999999999999996
+      deg:
+        type: integer
+        description: Wind direction, degrees (meteorological)
+        format: int32
+        example: 150
+  Clouds:
+    title: Clouds
+    type: object
+    properties:
+      all:
+        type: integer
+        description: Cloudiness, %
+        format: int32
+        example: 75
+  Sys:
+    title: Sys
+    type: object
+    properties:
+      type:
+        type: integer
+        description: Internal parameter
+        format: int32
+        example: 1
+      id:
+        type: integer
+        description: Internal parameter
+        format: int32
+        example: 8166
+      message:
+        type: number
+        description: Internal parameter
+        example: 0.0166
+      country:
+        type: string
+        description: Country code (GB, JP etc.)
+        example: US
+      sunrise:
+        type: integer
+        description: Sunrise time, unix, UTC
+        format: int32
+        example: 1435610796
+      sunset:
+        type: integer
+        description: Sunset time, unix, UTC
+        format: int32
+        example: 1435650870
+  WeatherResponse:
+    type: "object"
+    properties:
+      coord:
+        $ref: "#/definitions/Coord"
+      weather:
+        type: "array"
+        items:
+          $ref: "#/definitions/Weather"
+      base:
+        type: "string"
+        example: "stations"
+      main:
+        $ref: "#/definitions/Main"
+      visibility:
+          type: integer
+          description: Visibility, meter
+          example: 16093
+      wind: 
+        $ref: "#/definitions/Wind"
+      clouds:
+        $ref: "#/definitions/Clouds"
+      dt:
+        type: integer
+        description: Time of data calculation, unix, UTC
+        format: int32
+        example: 1435658272
+      sys:
+        $ref: "#/definitions/Sys"
+      id:
+        type: integer
+        description: City ID
+        format: int32
+        example: 2172797
+      name:
+        type: string
+        example: Cairns
+      cod:
+        type: integer
+        description: Internal parameter
+        format: int32
+        example: 200
+  ErrorApiResponse:
+    type: object
+    properties:
+      type:
+        type: string
+        example: "error"
+      message:
+        type: string
+        example: "<Error Message>"
