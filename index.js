@@ -102,7 +102,7 @@ app.get(BASE_PATH + 'hello', (req, res) => {
         res.send({ "type": "error", "message": "Invalid Authorization Token" })
     } else {
         res.status(200)
-        res.send({ "Hello": "World!" })
+        res.send({ "message": "Hello World!" })
     }
 })
 
