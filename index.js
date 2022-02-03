@@ -56,7 +56,7 @@ const corvallisWeather = {
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    const allowedOrigins = ['https://editor.swagger.io', 'https://hoppscotch.io'];
+    const allowedOrigins = ['https://editor.swagger.io', 'https://hoppscotch.io', 'http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com'];
     const origin = req.headers.origin;
     
     if (allowedOrigins.includes(origin)) {
