@@ -1,4 +1,6 @@
 const express = require('express')
+var fs = require("fs");
+var https = require("https");
 const crypto = require('crypto')
 var bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -58,7 +60,7 @@ app.use(function (req, res, next) {
     // Website you wish to allow to connect
     const allowedOrigins = ['https://editor.swagger.io', 'https://hoppscotch.io'];
     const origin = req.headers.origin;
-    
+
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
@@ -122,7 +124,7 @@ app.post(BASE_PATH + 'auth', (req, res) => {
         })
     } else {
         res.send({
-            "access-token": jwt.sign({"username": username}, TOKEN_SECRET, { expiresIn: '1h' }),
+            "access-token": jwt.sign({ "username": username }, TOKEN_SECRET, { expiresIn: '1h' }),
             "expires": expiresIn
         }
         )
@@ -165,6 +167,14 @@ function getBearerToken(req) {
 }
 
 
-app.listen(port, () => {
-    console.log(`API Mocker app listening at http://localhost:${port}`)
-})
+https
+    .createServer(
+        {
+            key: fs.readFileSync("./certs/server.key"),
+            cert: fs.readFileSync("./certs/server.cert"),
+        },
+        app
+    )
+    .listen(3000, function () {
+        console.log(`API Mocker app listening at https://localhost:${port}`)
+    });
