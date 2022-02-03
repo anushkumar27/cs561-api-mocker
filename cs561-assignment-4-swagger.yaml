@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "localhost"
+host: "localhost:3000"
 basePath: "/v1"
 tags:
 - name: "Weather Service"
@@ -20,11 +20,19 @@ tags:
   description: "User authentication"
 schemes:
 - "http"
+securityDefinitions:
+  Bearer:
+    description: Please append "Bearer \<token\>" in the input box below 
+    type: apiKey
+    name: Authorization
+    in: header
 paths:
   /weather:
     get:
       tags:
       - "Weather Service"
+      security:
+        - Bearer: []
       summary: "Get Corvallis's weather details"
       operationId: "getWeatherData"
       produces:
@@ -49,7 +57,11 @@ paths:
             items:
               $ref: "#/definitions/WeatherResponse"
         "400":
-          description: "Invalid appid"
+          description: "Authorization Token Missing"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
+        "401":
+          description: "Invalid Authorization Token"
           schema:
             $ref: "#/definitions/ErrorApiResponse"
     
@@ -57,6 +69,8 @@ paths:
     get:
       tags:
       - "Greetings"
+      security:
+        - Bearer: []
       summary: "Get greetings"
       operationId: "getGreetings"
       produces:
@@ -65,8 +79,15 @@ paths:
         "200":
           description: "successful"
           schema:
-            type: "object"
-            example: {"Hello": "World!"}
+            $ref: "#/definitions/Message"
+        "400":
+          description: "Authorization Token Missing"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
+        "401":
+          description: "Invalid Authorization Token"
+          schema:
+            $ref: "#/definitions/ErrorApiResponse"
   /auth:
     post:
       tags:
@@ -93,16 +114,18 @@ paths:
           description: "successful"
           schema:
             $ref: "#/definitions/Token"
-        "410":
-          description: "Username or Password Incorrect"
-          schema:
-            $ref: "#/definitions/ErrorApiResponse"
-        "405":
+        "400":
           description: "Invalid input"
           schema:
             $ref: "#/definitions/ErrorApiResponse"
   
 definitions:
+  Message:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        example: "Hello World!"
   Token:
     type: "object"
     properties:
