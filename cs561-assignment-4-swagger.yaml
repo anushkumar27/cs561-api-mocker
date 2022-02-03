@@ -20,6 +20,7 @@ tags:
   description: "User authentication"
 schemes:
 - "http"
+- "https"
 securityDefinitions:
   Bearer:
     description: Please append "Bearer \<token\>" in the input box below 
