@@ -56,13 +56,15 @@ const corvallisWeather = {
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', ['https://editor.swagger.io', 'https://hoppscotch.io', 'http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000']);
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    const allowedOrigins = ['https://editor.swagger.io', 'https://hoppscotch.io'];
+    const origin = req.headers.origin;
+    
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,authorization');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
@@ -102,7 +104,7 @@ app.get(BASE_PATH + 'hello', (req, res) => {
         res.send({ "type": "error", "message": "Invalid Authorization Token" })
     } else {
         res.status(200)
-        res.send({ "Hello": "World!" })
+        res.send({ "message": "Hello World!" })
     }
 })
 
