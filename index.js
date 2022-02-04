@@ -5,7 +5,10 @@ const jwt = require('jsonwebtoken');
 const app = express()
 const port = 3000
 const BASE_PATH = "/v1/"
-const TOKEN_SECRET = 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
+/**
+ * Note: This secret is used for local development and testing. In production the secret is injected as environment variable.
+ */
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
 
 const corvallisWeather = {
     "coord": {
