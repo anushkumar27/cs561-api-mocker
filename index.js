@@ -5,8 +5,10 @@ const jwt = require('jsonwebtoken');
 const app = express()
 const port = 3000
 const BASE_PATH = "/v1/"
-// Risk: Add to secrets/environment
-const TOKEN_SECRET = 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
+/**
+ * Note: This secret is used for local development and testing. In production the secret is injected as environment variable.
+ */
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
 
 const corvallisWeather = {
     "coord": {
@@ -74,10 +76,10 @@ app.use(function (req, res, next) {
 });
 
 // for parsing application/json
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
 // for parsing application/xwww-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get(BASE_PATH + 'weather', (req, res) => {
     res.setHeader("content-type", "application/json")
@@ -86,7 +88,7 @@ app.get(BASE_PATH + 'weather', (req, res) => {
 
 app.get(BASE_PATH + 'hello', (req, res) => {
     res.setHeader("content-type", "application/json")
-    res.send({"Hello" : "World!"})
+    res.send({ "Hello": "World!" })
 })
 
 app.post(BASE_PATH + 'auth', (req, res) => {
@@ -96,17 +98,17 @@ app.post(BASE_PATH + 'auth', (req, res) => {
     var expiresIn = new Date(new Date().getTime() + 3600000).toJSON()
     res.setHeader("content-type", "application/json")
 
-    if(username == undefined || password == undefined || username.length == 0 || password.length == 0){
+    if (username == undefined || password == undefined || username.length == 0 || password.length == 0) {
         res.status(400)
         res.send({
             "type": "error",
             "message": "Invalid Input"
-          })
-    }else{
+        })
+    } else {
         res.send({
-            "access-token": jwt.sign({"username" : username, "expiry": expiresIn}, TOKEN_SECRET),
+            "access-token": jwt.sign({ "username": username, "expiry": expiresIn }, TOKEN_SECRET),
             "expires": expiresIn
-          }
+        }
         )
     }
 })
