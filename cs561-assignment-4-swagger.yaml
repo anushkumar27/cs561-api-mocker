@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "CS561 Assignment 4, a swagger file demo."
+  description: "CS561 Assignment 5. <br><br> You have to <b>Authorize</b> before you can use the services. <br> 1. Use the <i>/auth</i> serice to get a access token<br>2. Click on <b>Authorize</b><br>3. Paste the access token in this <b>format</b> <i>\"Bearer < token >\"</i> <br>4. Try out the different services using the \"Try it Out\" button."
   version: "1.0.0"
-  title: "CS561: Swagger Demo"
+  title: "CS561 : Swagger Demo"
   termsOfService: "http://swagger.io/terms/"
   contact:
     email: "sureshka@oregonstate.edu"
