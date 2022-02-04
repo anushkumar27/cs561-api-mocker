@@ -59,13 +59,15 @@ const corvallisWeather = {
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', ['https://editor.swagger.io', 'https://hoppscotch.io', 'http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000']);
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    const allowedOrigins = ['https://editor.swagger.io', 'https://hoppscotch.io', 'http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com'];
+    const origin = req.headers.origin;
+    
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,authorization');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
@@ -82,19 +84,36 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get(BASE_PATH + 'weather', (req, res) => {
-    res.setHeader("content-type", "application/json")
-    res.send(corvallisWeather)
+    let token = getBearerToken(req);
+    if (!token) {
+        res.status(400)
+        res.send({ "type": "error", "message": "Authorization Token Missing" })
+    } else if (!validateToken(token)) {
+        res.status(401)
+        res.send({ "type": "error", "message": "Invalid Authorization Token" })
+    } else {
+        res.status(200)
+        res.json(corvallisWeather)
+    }
 })
 
 app.get(BASE_PATH + 'hello', (req, res) => {
-    res.setHeader("content-type", "application/json")
-    res.send({ "Hello": "World!" })
+    let token = getBearerToken(req);
+    if (!token) {
+        res.status(400)
+        res.send({ "type": "error", "message": "Authorization Token Missing" })
+    } else if (!validateToken(token)) {
+        res.status(401)
+        res.send({ "type": "error", "message": "Invalid Authorization Token" })
+    } else {
+        res.status(200)
+        res.send({ "message": "Hello World!" })
+    }
 })
 
 app.post(BASE_PATH + 'auth', (req, res) => {
     var username = req.body.username;
     var password = req.body.password;
-    // All tokens have 60 mins validity
     var expiresIn = new Date(new Date().getTime() + 3600000).toJSON()
     res.setHeader("content-type", "application/json")
 
@@ -106,12 +125,48 @@ app.post(BASE_PATH + 'auth', (req, res) => {
         })
     } else {
         res.send({
-            "access-token": jwt.sign({ "username": username, "expiry": expiresIn }, TOKEN_SECRET),
+            "access-token": jwt.sign({"username": username}, TOKEN_SECRET, { expiresIn: '1h' }),
             "expires": expiresIn
         }
         )
     }
 })
+
+/**
+ * This function is responsible to validate the auth token 
+ * @param {String} token 
+ * @returns boolean
+ * True: If the token is a valid JWT token
+ * False: If the token is invalid or expired
+ * 
+ */
+function validateToken(token) {
+    try {
+        jwt.verify(token, TOKEN_SECRET);
+        return true;
+    } catch (err) {
+        console.log("JWT verification failed: " + err.message)
+        return false;
+    }
+}
+
+/**
+ * This fucntion is responsible to extract the token from the HTTP headers 
+ * @param req 
+ * @returns 
+ *  undefined: If token is not found
+ *  string: Token
+ */
+function getBearerToken(req) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (!token) {
+        return undefined;
+    }
+    return token;
+}
+
 
 app.listen(port, () => {
     console.log(`API Mocker app listening at http://localhost:${port}`)
