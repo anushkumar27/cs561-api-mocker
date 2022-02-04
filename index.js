@@ -1,9 +1,14 @@
 const express = require('express')
 const crypto = require('crypto')
 var bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const app = express()
 const port = 3000
 const BASE_PATH = "/v1/"
+/**
+ * Note: This secret is used for local development and testing. In production the secret is injected as environment variable.
+ */
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'cd47d09523b2a3e304209f8aeb63c06c5d8ece4bf36d6df1bf72b2d98d080536'
 
 const corvallisWeather = {
     "coord": {
@@ -54,7 +59,7 @@ const corvallisWeather = {
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', ['https://editor.swagger.io', 'https://hoppscotch.io', 'https://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000']);
+    res.setHeader('Access-Control-Allow-Origin', ['https://editor.swagger.io', 'https://hoppscotch.io', 'http://ec2-34-217-113-76.us-west-2.compute.amazonaws.com:3000']);
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -71,10 +76,10 @@ app.use(function (req, res, next) {
 });
 
 // for parsing application/json
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
 // for parsing application/xwww-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get(BASE_PATH + 'weather', (req, res) => {
     res.setHeader("content-type", "application/json")
@@ -83,25 +88,27 @@ app.get(BASE_PATH + 'weather', (req, res) => {
 
 app.get(BASE_PATH + 'hello', (req, res) => {
     res.setHeader("content-type", "application/json")
-    res.send({"Hello" : "World!"})
+    res.send({ "Hello": "World!" })
 })
 
 app.post(BASE_PATH + 'auth', (req, res) => {
     var username = req.body.username;
     var password = req.body.password;
+    // All tokens have 60 mins validity
+    var expiresIn = new Date(new Date().getTime() + 3600000).toJSON()
     res.setHeader("content-type", "application/json")
 
-    if(username == undefined || password == undefined || username.length == 0 || password.length == 0){
+    if (username == undefined || password == undefined || username.length == 0 || password.length == 0) {
         res.status(400)
         res.send({
             "type": "error",
             "message": "Invalid Input"
-          })
-    }else{
+        })
+    } else {
         res.send({
-            "token": crypto.randomBytes(32).toString('hex'),
-            "expiry": Math.floor(new Date().getTime() + 30 * 60000)
-          }
+            "access-token": jwt.sign({ "username": username, "expiry": expiresIn }, TOKEN_SECRET),
+            "expires": expiresIn
+        }
         )
     }
 })
